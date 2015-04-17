@@ -1,4 +1,4 @@
-package drn.util.file.binary;
+package util.file.binary;
 
 import java.io.*;
 
@@ -6,7 +6,7 @@ import java.io.*;
  *
  * @author Dan
  */
-public class BinaryFileReader  {
+public class BinaryFileReader implements Closeable  {
     
     BufferedInputStream in;
     
@@ -34,6 +34,7 @@ public class BinaryFileReader  {
         return in.read(bytes, offset, length);
     }
     
+    @Override
     public void close() throws IOException {
         in.close();
     }

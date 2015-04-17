@@ -1,8 +1,8 @@
-package drn.util.file.text;
+package util.file.text;
 
-import drn.util.file.FileFormat;
-import drn.util.file.FileReaderStrategy;
-import drn.util.file.Record;
+import util.file.FileFormat;
+import util.file.FileReaderStrategy;
+import util.file.Record;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -41,7 +41,7 @@ public class TextFileReader implements FileReaderStrategy {
             while ((line = in.readLine()) != null) {
                 data += line + NEWLINE;
             }
-            return format.decodeAll(data);
+            return format.decode(data);
         }
         
     }

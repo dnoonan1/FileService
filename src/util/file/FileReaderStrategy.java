@@ -1,4 +1,4 @@
-package drn.util.file;
+package util.file;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,7 +8,5 @@ import java.util.List;
  * @author Dan
  */
 public interface FileReaderStrategy {
-
-    public List<Record> readAll() throws IOException;
-    
+    public List<Record> readAll() throws IOException;    
 }

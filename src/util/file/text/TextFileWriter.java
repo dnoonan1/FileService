@@ -1,8 +1,8 @@
-package drn.util.file.text;
+package util.file.text;
 
-import drn.util.file.FileFormat;
-import drn.util.file.FileWriterStrategy;
-import drn.util.file.Record;
+import util.file.FileFormat;
+import util.file.FileWriterStrategy;
+import util.file.Record;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -37,7 +37,7 @@ public class TextFileWriter implements FileWriterStrategy {
         try (BufferedWriter out =
                 new BufferedWriter(
                     new FileWriter(file, append))) {
-            out.write(format.encodeAll(records));
+            out.write(format.encode(records));
         }
         
     }

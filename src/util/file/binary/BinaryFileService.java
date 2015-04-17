@@ -1,12 +1,13 @@
-package drn.util.file.binary;
+package util.file.binary;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
  *
  * @author Dan
  */
-public class BinaryFileService {
+public class BinaryFileService implements Closeable {
 
     BinaryFileReader reader;
     BinaryFileWriter writer;
@@ -59,7 +60,8 @@ public class BinaryFileService {
         writer.close();
     }
     
-    public void closeAll() throws IOException {
+    @Override
+    public void close() throws IOException {
         closeReader();
         closeWriter();
     }

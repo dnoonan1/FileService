@@ -1,8 +1,8 @@
-package drn.util.file.format;
+package util.file.format;
 
-import drn.util.file.FileFormat;
-import drn.util.file.LinkedRecord;
-import drn.util.file.Record;
+import util.file.FileFormat;
+import util.file.LinkedRecord;
+import util.file.Record;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +22,7 @@ public class IniFileFormat implements FileFormat {
     private static final String NEWLINE = String.format("%n");
 
     @Override
-    public String encodeAll(List<Record> records) {
+    public String encode(List<Record> records) {
         StringBuilder data = new StringBuilder();
         for (Record rec : records) {
             Set<String> keys = rec.keySet();
@@ -44,7 +44,7 @@ public class IniFileFormat implements FileFormat {
     }
 
     @Override
-    public List<Record> decodeAll(String data) {
+    public List<Record> decode(String data) {
         
         List<Record> records = new ArrayList<>();
         Record record = new LinkedRecord();

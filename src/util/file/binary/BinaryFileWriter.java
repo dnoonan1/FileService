@@ -1,4 +1,4 @@
-package drn.util.file.binary;
+package util.file.binary;
 
 import java.io.*;
 
@@ -6,7 +6,7 @@ import java.io.*;
  *
  * @author Dan
  */
-public class BinaryFileWriter {
+public class BinaryFileWriter implements Closeable {
 
     BufferedOutputStream out;
     
@@ -38,6 +38,7 @@ public class BinaryFileWriter {
         out.write(bytes, offset, length);
     }
     
+    @Override
     public void close() throws IOException {
         out.close();
     }

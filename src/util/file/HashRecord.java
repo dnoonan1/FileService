@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package drn.util.file;
+package util.file;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 /**
  *
  * @author Dan
  */
-public class LinkedRecord extends LinkedHashMap<String, String>
-        implements Record {}
+public class HashRecord extends HashMap<String, String> implements Record {}
