@@ -1,10 +1,10 @@
 package util.file.format;
 
+import java.text.ParseException;
 import util.file.FileFormat;
-import util.file.LinkedRecord;
-import util.file.Record;
+import util.LinkedRecord;
+import util.Record;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -49,7 +49,11 @@ public class CsvFileFormat implements FileFormat {
         this.separator = Character.toString(separator);
     }
     
-    public final void setHeader(boolean header) {
+    public final boolean hasHeader() {
+        return hasHeader;
+    }
+    
+    public final void setHeader(boolean hasHeader) {
         this.hasHeader = hasHeader;
     }
     
@@ -77,34 +81,111 @@ public class CsvFileFormat implements FileFormat {
     }
 
     @Override
-    public final List<Record> decode(String data) {
+    public final List<Record> decode(String data) throws ParseException {
         List<Record> records = new ArrayList<>();
         Record record;
-        List<String> headers;
+        ArrayList<String> headers;
         String[] lines = data.split(NEWLINE);
         int i = 0;
-        if (lines.length > 0) { // may not need this
-            if (hasHeader) {
-                headers = new ArrayList(
-                        Arrays.asList(lines[0].split(separator))
-                );
+        if (lines.length > 0) {
+            if (lines.length > 0 && hasHeader) {
+                headers = parseHeaders(lines[0]);
                 i++;
             } else {
                 headers = new ArrayList<>();
             }
-            for (; i < lines.length; i++) {
-                record = new LinkedRecord();
-                String[] cols = lines[i].split(separator);
-                for (int j = 0; j < cols.length; j++) {
-                    if (j >= headers.size()) {
-                        headers.add("[" + j + "]");
-                    }
-                    record.put(headers.get(j), cols[j]);
-                }
+            for (; i < lines.length; i++) {                
+                record = parseLine(lines[i], headers);               
                 records.add(record);
             }
         }
         return records;
+    }
+    
+    private ArrayList<String> parseHeaders(String line) throws ParseException {
+        ArrayList<String> headers = new ArrayList<>();
+        String value;
+        char sep = separator.charAt(0);
+        int begin = 0;
+        int i = 0;
+        while (i < line.length()) {
+            begin = i;
+            if (line.charAt(i) == QUOTE_CHAR) {
+                i++;
+                while (i < line.length()) {
+                    if (line.charAt(i) == QUOTE_CHAR) {
+                        if (i + 1 < line.length()) {
+                            if (line.charAt(i+1) == sep) {
+                                break;    
+                            }  else if (line.charAt(i+1) == QUOTE_CHAR) {
+                                i += 2;
+                                continue;
+                            }
+                            throw new ParseException("", i);
+                        } else {
+                            break;
+                        }
+                    }
+                    i++;
+                }
+                value = line.substring(begin + 1, i)
+                        .replace(ESCAPED_QUOTE, QUOTE);
+            } else {
+                while (i < line.length() && line.charAt(i) != sep) {
+                    i++;
+                }
+                value = line.substring(begin, i);
+            }
+            headers.add(value);
+            i+= 2;
+        }
+        return headers;
+    }
+    
+    private Record parseLine(String line, ArrayList<String> headers)
+            throws ParseException {
+        Record record = new LinkedRecord();
+        int valueCount = 0;
+        String value;
+        char sep = separator.charAt(0);
+        int begin = 0;
+        int i = 0;
+        while (i < line.length()) {
+            begin = i;
+            if (line.charAt(i) == QUOTE_CHAR) {
+                i++;
+                while (i < line.length()) {
+                    if (line.charAt(i) == QUOTE_CHAR) {
+                        if (i + 1 < line.length()) {
+                            if (line.charAt(i+1) == sep) {
+                                break;    
+                            } else if (line.charAt(i+1) == QUOTE_CHAR) {
+                                i += 2;
+                                continue;
+                            }
+                            throw new ParseException("", i);
+                        } else {
+                            break;
+                        }
+                    }
+                    i++;
+                }
+                value = line.substring(begin + 1, i)
+                        .replace(ESCAPED_QUOTE, QUOTE);
+            } else {
+                while (i < line.length() && line.charAt(i) != sep) {
+                    i++;
+                }
+                value = line.substring(begin, i);
+            }
+            if (valueCount >= headers.size()) {
+                headers.add("[" + valueCount + "]");
+            }
+            record.put(headers.get(valueCount), value);
+            valueCount++;
+            i++;
+        }
+        return record;
     }
     
 }

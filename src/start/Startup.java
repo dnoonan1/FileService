@@ -2,13 +2,14 @@ package start;
 
 import util.file.FileFormat;
 import util.file.FileService;
-import util.file.Record;
+import util.Record;
 import util.file.format.CsvFileFormat;
 import util.file.format.IniFileFormat;
 import util.file.text.TextFileReader;
 import util.file.text.TextFileWriter;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public class Startup {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         
         final boolean WITH_HEADER = true;
         final char TAB = '\t';

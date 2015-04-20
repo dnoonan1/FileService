@@ -1,8 +1,8 @@
 package util.file.format;
 
 import util.file.FileFormat;
-import util.file.LinkedRecord;
-import util.file.Record;
+import util.LinkedRecord;
+import util.Record;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,32 +15,62 @@ public class IniFileFormat implements FileFormat {
     
     private static final String SEMICOLON = ";";
     private static final String HASHTAG = "#";
-    private static final String SECTION = "section";
+    private static final String SECTION = "[]";
     private static final String SECTION_START = "[";
     private static final String SECTION_END = "]";
     private static final String EQUALS = "=";
+    private static final String COLON = ":";
+    private static final String SEPARATOR = "=|:";
     private static final String NEWLINE = String.format("%n");
+    
+    private boolean space;
+    private boolean useEquals;
+
+    public IniFileFormat() {
+        this(false, true);
+    }
+
+    public IniFileFormat(boolean space) {
+        this(space, true);
+    }
+    
+    public IniFileFormat(boolean space, boolean useEquals) {
+        this.space = space;
+        this.useEquals = useEquals;
+    }
 
     @Override
     public String encode(List<Record> records) {
         StringBuilder data = new StringBuilder();
+        int start, end;
+        String separator;
+        if (useEquals) {
+            separator = "=";
+        } else {
+            separator = ":";
+        }
+        if (space) {
+            separator = " " + separator + " ";
+        }
         for (Record rec : records) {
             Set<String> keys = rec.keySet();
             for (String key : keys) {
                 if (key.equals(SECTION)) {
                     data.append(SECTION_START)
                         .append(rec.get(SECTION))
-                        .append(SECTION_END)
-                        .append(NEWLINE);
+                        .append(SECTION_END);
                 } else {
                     data.append(key)
-                        .append(EQUALS)
-                        .append(rec.get(key))
-                        .append(NEWLINE);
+                        .append(separator)
+                        .append(rec.get(key));
                 }
+                data.append(NEWLINE);
             }
+            data.append(NEWLINE);
         }
-        return data.toString();
+        start = data.length() - 2;
+        end = data.length();
+        return data.delete(start, end).toString();
     }
 
     @Override
@@ -78,8 +108,8 @@ public class IniFileFormat implements FileFormat {
                 String title = line.substring(start+1, end);
                 record.put(SECTION, title);
             } else {
-                // Name-value pair separated by =
-                String[] pair = line.split(EQUALS);
+                // Name-value pair separated by equals (=) or colon (:)
+                String[] pair = line.split(SEPARATOR);
                 record.put(pair[0].trim(), pair[1].trim());
             }
         }

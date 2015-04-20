@@ -1,14 +1,14 @@
-package util.file;
+package util;
 
 /**
  *
  * @author dnoonan1
  */
-public interface Decoder<Data, Format> {
+public interface Encoder<Decoded, Encoded> {
     /**
      * 
      * @param data
      * @return 
      */
-    Format decode(Data data);
+    Encoded encode(Decoded data);
 }

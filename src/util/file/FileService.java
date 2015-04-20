@@ -1,6 +1,8 @@
 package util.file;
 
+import util.Record;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -31,7 +33,7 @@ public class FileService {
         this.writer = writer;
     }
     
-    public List<Record> readAll() throws IOException {
+    public List<Record> readAll() throws IOException, ParseException {
         return reader.readAll();
     }
     

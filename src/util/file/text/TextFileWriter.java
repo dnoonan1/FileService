@@ -2,7 +2,7 @@ package util.file.text;
 
 import util.file.FileFormat;
 import util.file.FileWriterStrategy;
-import util.file.Record;
+import util.Record;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

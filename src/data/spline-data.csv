@@ -1,7 +1,7 @@
 type,20,TCB (Kochanek-Bartels) spline
 degree,3,cubic
 number of points,9
-arclength,0
+arclength0
 
 flags,79
 bRealValued,true
@@ -10,7 +10,7 @@ bClosedCurve,true
 bEndTangents,true
 bInOutTangents,false
 bInOutAccel,false
-bUseTime,true
+bUseTimetrue
 
 Index,Key,,Value,,,Tangents
 ,,x,y,z,x,y,z

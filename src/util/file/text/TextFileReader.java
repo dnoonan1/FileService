@@ -2,11 +2,12 @@ package util.file.text;
 
 import util.file.FileFormat;
 import util.file.FileReaderStrategy;
-import util.file.Record;
+import util.Record;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class TextFileReader implements FileReaderStrategy {
     }
     
     @Override
-    public final List<Record> readAll() throws IOException {
+    public final List<Record> readAll() throws IOException, ParseException {
         
         final String NEWLINE = String.format("%n");
         
