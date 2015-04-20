@@ -68,7 +68,7 @@ public class IniFileFormat implements FileFormat {
             }
             data.append(NEWLINE);
         }
-        start = data.length() - 2;
+        start = data.length() - 2 * NEWLINE.length();
         end = data.length();
         return data.delete(start, end).toString();
     }

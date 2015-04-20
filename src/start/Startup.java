@@ -3,7 +3,6 @@ package start;
 import util.file.FileFormat;
 import util.file.FileService;
 import util.Record;
-import util.file.format.CsvFileFormat;
 import util.file.format.IniFileFormat;
 import util.file.text.TextFileReader;
 import util.file.text.TextFileWriter;
@@ -11,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import util.file.format.CsvFileFormat;
+import util.file.format.CsvParseException;
 
 /**
  *
@@ -70,15 +71,21 @@ public class Startup {
         // Write to file (comments removed)
         System.out.println("\nWriting records to file...");
         fs.overwrite(records);
-        System.out.println("...Done!");
+        System.out.println("...Done!\n");
         
         // Switch to read CSV file with header
         fs.setReader(new TextFileReader(fileFolder + "contacts.csv", CSV_COMMA_WITH_HEADER));
         
-        records = fs.readAll();
-        System.out.println("\nList of Records:");
-        for (Record rec : records) {
-            System.out.println(rec);
+        try {
+            records = fs.readAll();
+            System.out.println("\nList of Records:");
+            for (Record rec : records) {
+                System.out.println(rec);
+            }
+        } catch (CsvParseException e) {
+            System.out.println("Exception parsing CSV line " + e.getLineNumber()
+                    + " at index " + e.getErrorOffset()
+                    + ": " + e.getMessage());
         }
         
     }

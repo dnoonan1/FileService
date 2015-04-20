@@ -88,7 +88,7 @@ public class SimpleCsvFileFormat implements FileFormat {
         String[] lines = data.split(NEWLINE);
         int i = 0;
         if (lines.length > 0) {
-            if (lines.length > 0 && hasHeader) {
+            if (hasHeader) {
                 headers = new ArrayList(
                     Arrays.asList(lines[0].split(separator))
                 );
