@@ -1,8 +1,8 @@
-package util.file.text;
+package edu.wctc.advjava.drn.service.file;
 
-import util.file.FileFormat;
-import util.file.FileReaderStrategy;
-import util.Record;
+import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.service.file.FileReaderStrategy;
+import edu.wctc.advjava.drn.util.Record;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -32,7 +32,7 @@ public class TextFileReader implements FileReaderStrategy {
     }
     
     @Override
-    public final List<Record> readAll() throws IOException, ParseException {
+    public final List<Record> readAll() throws IOException, FileFormatException {
         
         final String NEWLINE = String.format("%n");
         

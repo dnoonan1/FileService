@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package util;
+package edu.wctc.advjava.drn.util;
 
 import java.util.HashMap;
 

@@ -1,8 +1,8 @@
-package util.file.format;
+package edu.wctc.advjava.drn.service.file.format;
 
-import util.file.FileFormat;
-import util.LinkedRecord;
-import util.Record;
+import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.util.LinkedRecord;
+import edu.wctc.advjava.drn.util.Record;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @author Dan
  */
-public class IniFileFormat implements FileFormat {
+public class INIFileFormat implements FileFormat {
     
     private static final String SEMICOLON = ";";
     private static final String HASHTAG = "#";
@@ -26,15 +26,15 @@ public class IniFileFormat implements FileFormat {
     private boolean space;
     private boolean useEquals;
 
-    public IniFileFormat() {
+    public INIFileFormat() {
         this(false, true);
     }
 
-    public IniFileFormat(boolean space) {
+    public INIFileFormat(boolean space) {
         this(space, true);
     }
     
-    public IniFileFormat(boolean space, boolean useEquals) {
+    public INIFileFormat(boolean space, boolean useEquals) {
         this.space = space;
         this.useEquals = useEquals;
     }

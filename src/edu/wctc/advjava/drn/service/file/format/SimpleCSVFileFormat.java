@@ -1,8 +1,8 @@
-package util.file.format;
+package edu.wctc.advjava.drn.service.file.format;
 
-import util.file.FileFormat;
-import util.LinkedRecord;
-import util.Record;
+import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.util.LinkedRecord;
+import edu.wctc.advjava.drn.util.Record;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Dan
  */
-public class SimpleCsvFileFormat implements FileFormat {
+public class SimpleCSVFileFormat implements FileFormat {
 
     private static final char CR = '\r';
     private static final char LF = '\n';
@@ -25,19 +25,19 @@ public class SimpleCsvFileFormat implements FileFormat {
     private String separator;
     private boolean hasHeader;
 
-    public SimpleCsvFileFormat() {
+    public SimpleCSVFileFormat() {
         this(COMMA, NO_HEADER);
     }
     
-    public SimpleCsvFileFormat(boolean hasHeader) {
+    public SimpleCSVFileFormat(boolean hasHeader) {
         this(COMMA, hasHeader);
     }
     
-    public SimpleCsvFileFormat(char separator) {
+    public SimpleCSVFileFormat(char separator) {
         this(separator, NO_HEADER);
     }
     
-    public SimpleCsvFileFormat(char separator, boolean hasHeader) {
+    public SimpleCSVFileFormat(char separator, boolean hasHeader) {
         setSeparator(separator);
         this.hasHeader = hasHeader; // no validation required (boolean)
     }

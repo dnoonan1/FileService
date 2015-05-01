@@ -1,8 +1,6 @@
-package util.file.text;
+package edu.wctc.advjava.drn.service.file;
 
-import util.file.FileFormat;
-import util.file.FileWriterStrategy;
-import util.Record;
+import edu.wctc.advjava.drn.util.Record;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -32,12 +30,16 @@ public class TextFileWriter implements FileWriterStrategy {
     
     @Override
     public void writeAll(List<Record> records, boolean append)
-            throws IOException {
+            throws IOException, FileFormatException {
     
         try (BufferedWriter out =
                 new BufferedWriter(
                     new FileWriter(file, append))) {
             out.write(format.encode(records));
+        } catch (IOException ioe) {
+            throw ioe;
+        } catch (Exception e) {
+            throw e;
         }
         
     }

@@ -1,6 +1,6 @@
-package util.file;
+package edu.wctc.advjava.drn.service.file;
 
-import util.Record;
+import edu.wctc.advjava.drn.util.Record;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -10,6 +10,9 @@ import java.util.List;
  * @author Dan
  */
 public class FileService {
+    
+    private static final boolean APPEND = true;
+    private static final boolean OVERWRITE = false;
     
     private FileReaderStrategy reader;
     private FileWriterStrategy writer;
@@ -33,23 +36,23 @@ public class FileService {
         this.writer = writer;
     }
     
-    public List<Record> readAll() throws IOException, ParseException {
+    public List<Record> readAll() throws IOException, FileFormatException {
         return reader.readAll();
     }
     
     public void writeAll(List<Record> records, boolean append)
-            throws IOException {
+            throws IOException, FileFormatException {
         writer.writeAll(records, append);
     }
     
     public void append(List<Record> records)
-            throws IOException {
-        writer.append(records);
+            throws IOException, FileFormatException {
+        writer.writeAll(records, APPEND);
     }
     
     public void overwrite(List<Record> records)
-            throws IOException {
-        writer.overwrite(records);
+            throws IOException, FileFormatException {
+        writer.writeAll(records, OVERWRITE);
     }
     
 }

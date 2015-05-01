@@ -1,19 +1,18 @@
-package util.file.format;
+package edu.wctc.advjava.drn.service.file.format;
 
 import java.text.ParseException;
-import util.file.FileFormat;
-import util.LinkedRecord;
-import util.Record;
+import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.util.LinkedRecord;
+import edu.wctc.advjava.drn.util.Record;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import util.LineParser;
+import edu.wctc.advjava.drn.util.LineParser;
 
 /**
  *
  * @author Dan
  */
-public class CsvFileFormat implements FileFormat, LineParser {
+public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
 
     private static final char CR = '\r';
     private static final char LF = '\n';
@@ -27,19 +26,19 @@ public class CsvFileFormat implements FileFormat, LineParser {
     private String separator;
     private boolean hasHeader;
 
-    public CsvFileFormat() {
+    public CSVFileFormat() {
         this(COMMA, NO_HEADER);
     }
     
-    public CsvFileFormat(boolean hasHeader) {
+    public CSVFileFormat(boolean hasHeader) {
         this(COMMA, hasHeader);
     }
     
-    public CsvFileFormat(char separator) {
+    public CSVFileFormat(char separator) {
         this(separator, NO_HEADER);
     }
     
-    public CsvFileFormat(char separator, boolean hasHeader) {
+    public CSVFileFormat(char separator, boolean hasHeader) {
         setSeparator(separator);
         this.hasHeader = hasHeader; // no validation required (boolean)
     }
@@ -83,7 +82,7 @@ public class CsvFileFormat implements FileFormat, LineParser {
     }
 
     @Override
-    public final List<Record> decode(String data) throws ParseException {
+    public final List<Record> decode(String data) throws CSVParseException {
         List<Record> records = new ArrayList<>();
         Record record;
         List<String> headers;
@@ -94,7 +93,7 @@ public class CsvFileFormat implements FileFormat, LineParser {
             if (hasHeader) {
                 try {
                     headers = parseLine(lines[i++]);
-                } catch (CsvParseException e) {
+                } catch (CSVParseException e) {
                     e.setLineNumber(i+1);
                     throw e;
                 }
@@ -112,7 +111,7 @@ public class CsvFileFormat implements FileFormat, LineParser {
                         record.put(headers.get(j), values.get(j));
                     }
                     records.add(record);
-                } catch (CsvParseException e) {
+                } catch (CSVParseException e) {
                     e.setLineNumber(i+1);
                     throw e;
                 }
@@ -124,7 +123,7 @@ public class CsvFileFormat implements FileFormat, LineParser {
     // This method is public so that other FileFormats and parsers can
     // potentially use it. It may be moved to a separate class in the future.
     @Override
-    public List<String> parseLine(String line) throws CsvParseException {
+    public List<String> parseLine(String line) throws CSVParseException {
         
         List<String> values = new ArrayList<>();
         String value;
@@ -158,7 +157,7 @@ public class CsvFileFormat implements FileFormat, LineParser {
                                 // If the previous " is not followed by either
                                 // the separator or another ", the line is 
                                 // formatted incorrectly.
-                                throw new CsvParseException(
+                                throw new CSVParseException(
                                     "\" or " + separator + " expected, "
                                   + nextChar + " found instead.\n"
                                   + line.substring(0, i + 1) + " <-- error",

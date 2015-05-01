@@ -1,4 +1,4 @@
-package util.file.binary;
+package edu.wctc.advjava.drn.service.file;
 
 import java.io.Closeable;
 import java.io.IOException;
