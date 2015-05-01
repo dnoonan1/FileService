@@ -21,22 +21,23 @@ public class INIFileFormat implements FileFormat {
     private static final String EQUALS = "=";
     private static final String COLON = ":";
     private static final String SEPARATOR = "=|:";
+    private static final String SPACE = " ";
     private static final String NEWLINE = String.format("%n");
     
     private boolean space;
-    private boolean useEquals;
+    private boolean useColon;
 
     public INIFileFormat() {
-        this(false, true);
+        this(false, false);
     }
 
     public INIFileFormat(boolean space) {
-        this(space, true);
+        this(space, false);
     }
     
-    public INIFileFormat(boolean space, boolean useEquals) {
+    public INIFileFormat(boolean space, boolean useColon) {
         this.space = space;
-        this.useEquals = useEquals;
+        this.useColon = useColon;
     }
 
     @Override
@@ -44,13 +45,13 @@ public class INIFileFormat implements FileFormat {
         StringBuilder data = new StringBuilder();
         int start, end;
         String separator;
-        if (useEquals) {
-            separator = "=";
+        if (useColon) {
+            separator = COLON;
         } else {
-            separator = ":";
+            separator = EQUALS;
         }
         if (space) {
-            separator = " " + separator + " ";
+            separator = SPACE + separator + SPACE;
         }
         for (Record rec : records) {
             Set<String> keys = rec.keySet();
@@ -74,7 +75,7 @@ public class INIFileFormat implements FileFormat {
     }
 
     @Override
-    public List<Record> decode(String data) {
+    public List<Record> decode(String data) throws INIParseException {
         
         List<Record> records = new ArrayList<>();
         Record record = new LinkedRecord();
@@ -82,7 +83,7 @@ public class INIFileFormat implements FileFormat {
             
         for (int i = 0; i < lines.length; i++) {
 
-            String line = lines[i];
+            String line = lines[i].trim();
 
             // Ignore empty lines
             // or lines that start with ; or # (comment lines)
@@ -110,6 +111,15 @@ public class INIFileFormat implements FileFormat {
             } else {
                 // Name-value pair separated by equals (=) or colon (:)
                 String[] pair = line.split(SEPARATOR);
+                if (pair.length != 2) {
+                    INIParseException e = new INIParseException(
+                            "expected format\"name=value\"\n"
+                            + line + "<-- error",
+                            line.length()
+                    );
+                    e.setLineNumber(i + 1);
+                    throw e;
+                }
                 record.put(pair[0].trim(), pair[1].trim());
             }
         }

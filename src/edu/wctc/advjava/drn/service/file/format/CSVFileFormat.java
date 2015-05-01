@@ -1,12 +1,9 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import java.text.ParseException;
 import edu.wctc.advjava.drn.service.file.FileFormat;
-import edu.wctc.advjava.drn.util.LinkedRecord;
-import edu.wctc.advjava.drn.util.Record;
+import edu.wctc.advjava.drn.util.*;
 import java.util.ArrayList;
 import java.util.List;
-import edu.wctc.advjava.drn.util.LineParser;
 
 /**
  *
@@ -159,8 +156,8 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
                                 // formatted incorrectly.
                                 throw new CSVParseException(
                                     "\" or " + separator + " expected, "
-                                  + nextChar + " found instead.\n"
-                                  + line.substring(0, i + 1) + " <-- error",
+                                  + nextChar + " found instead\n"
+                                  + line.substring(0, i + 1) + "<-- error",
                                     i + 1
                                 );
                             }

@@ -4,7 +4,7 @@ package edu.wctc.advjava.drn.service.file.format;
  *
  * @author Dan
  */
-public class CSVParseException extends CSVFileFormatException {
+public class INIParseException extends INIFileFormatException {
 
     private int lineNumber;
     private int errorOffset;
@@ -16,7 +16,7 @@ public class CSVParseException extends CSVFileFormatException {
      * @param msg the detail message.
      * @param errorOffset
      */
-    public CSVParseException(String msg, int errorOffset) {
+    public INIParseException(String msg, int errorOffset) {
         super(msg);
         setErrorOffset(errorOffset);
     }
