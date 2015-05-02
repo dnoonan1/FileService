@@ -11,4 +11,26 @@ import java.util.HashMap;
  *
  * @author Dan
  */
-public class HashRecord extends HashMap<String, String> implements Record {}
+public class HashRecord extends HashMap<String, String> implements Record {
+
+    private String title;
+    
+    public HashRecord() {}
+
+    public HashRecord(String title) {
+        // No validation - see setTitle() below
+        this.title = title;
+    }
+    
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        // No validation - allow null and empty titles
+        this.title = title;
+    }
+    
+}

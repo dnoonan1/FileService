@@ -1,8 +1,7 @@
 package edu.wctc.advjava.drn.service.file.format;
 
 import edu.wctc.advjava.drn.service.file.FileFormat;
-import edu.wctc.advjava.drn.util.LinkedRecord;
-import edu.wctc.advjava.drn.util.Record;
+import edu.wctc.advjava.drn.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ public class INIFileFormat implements FileFormat {
     
     private static final String SEMICOLON = ";";
     private static final String HASHTAG = "#";
-    private static final String SECTION = "[]";
     private static final String SECTION_START = "[";
     private static final String SECTION_END = "]";
     private static final String EQUALS = "=";
@@ -41,7 +39,7 @@ public class INIFileFormat implements FileFormat {
     }
 
     @Override
-    public String encode(List<Record> records) {
+    public final String encode(List<Record> records) {
         StringBuilder data = new StringBuilder();
         int start, end;
         String separator;
@@ -54,18 +52,15 @@ public class INIFileFormat implements FileFormat {
             separator = SPACE + separator + SPACE;
         }
         for (Record rec : records) {
+            data.append(SECTION_START)
+                .append(rec.getTitle())
+                .append(SECTION_END);
             Set<String> keys = rec.keySet();
             for (String key : keys) {
-                if (key.equals(SECTION)) {
-                    data.append(SECTION_START)
-                        .append(rec.get(SECTION))
-                        .append(SECTION_END);
-                } else {
-                    data.append(key)
-                        .append(separator)
-                        .append(rec.get(key));
-                }
-                data.append(NEWLINE);
+                data.append(key)
+                    .append(separator)
+                    .append(rec.get(key))
+                    .append(NEWLINE);
             }
             data.append(NEWLINE);
         }
@@ -75,7 +70,7 @@ public class INIFileFormat implements FileFormat {
     }
 
     @Override
-    public List<Record> decode(String data) throws INIParseException {
+    public final List<Record> decode(String data) throws INIParseException {
         
         List<Record> records = new ArrayList<>();
         Record record = new LinkedRecord();
@@ -97,36 +92,70 @@ public class INIFileFormat implements FileFormat {
             // pairs separated by =, with the following format:
             //     1. [SECTION NAME]
             //     2. NAME = VALUE
-            if (line.contains(SECTION_START)
-                    && line.contains(SECTION_END)) {
+            if (isSectionHeader(line)) {
                 // Start of a new section
                 if (!record.isEmpty()) {
                     records.add(record);
                     record = new LinkedRecord();
                 }
-                int start = line.indexOf(SECTION_START);
-                int end = line.indexOf(SECTION_END);
-                String title = line.substring(start+1, end);
-                record.put(SECTION, title);
+//                int start = line.indexOf(SECTION_START);
+//                int end = line.indexOf(SECTION_END);
+//                String title = line.substring(start+1, end);
+                String title = parseTitle(line);
+                record.setTitle(title);
             } else {
-                // Name-value pair separated by equals (=) or colon (:)
-                String[] pair = line.split(SEPARATOR);
-                if (pair.length != 2) {
-                    INIParseException e = new INIParseException(
-                            "expected format\"name=value\"\n"
-                            + line + "<-- error",
-                            line.length()
-                    );
-                    e.setLineNumber(i + 1);
+//                // Name-value pair separated by equals (=) or colon (:)
+//                String[] pair = line.split(SEPARATOR);
+//                if (pair.length != 2) {
+//                    INIParseException e = new INIParseException(
+//                            "expected format\"name=value\"\n"
+//                            + line + "<-- error",
+//                            line.length()
+//                    );
+//                    e.setLineNumber(i + 1);
+//                    throw e;
+//                }
+//                record.put(pair[0].trim(), pair[1].trim());
+                try {
+                    KeyValuePair<String, String> kv = parseLine(line);
+                    record.put(kv.getKey(), kv.getValue());
+                } catch (INIParseException e) {
+                    e.setLineNumber(i);
                     throw e;
-                }
-                record.put(pair[0].trim(), pair[1].trim());
+                } 
             }
         }
         
         records.add(record); // add final record
             
         return records;
+    }
+    
+    public final static boolean isSectionHeader(final String line) {
+        return line.startsWith(SECTION_START) && line.endsWith(SECTION_END);
+    }
+    
+    public final static String parseTitle(final String line) {
+        if (line.length() > 2) {
+            String title = line.substring(1, line.length() - 2);
+            return title;
+        } else {
+            return null;
+        }
+    }
+    
+    public final static
+        KeyValuePair<String, String> parseLine(final String line)
+            throws INIParseException {
+        String[] pair = line.split(SEPARATOR);
+        if (pair.length != 2) {
+            throw new INIParseException(
+                "expected format\"name=value\"\n"
+                + line + "<-- error",
+                line.length()
+            );
+        }
+        return new KeyValuePair(pair[0].trim(), pair[1].trim());
     }
     
 }
