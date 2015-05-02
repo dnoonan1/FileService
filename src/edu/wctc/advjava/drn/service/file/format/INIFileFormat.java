@@ -10,7 +10,8 @@ import java.util.Set;
  *
  * @author Dan
  */
-public class INIFileFormat implements FileFormat {
+public class INIFileFormat
+    implements FileFormat, LineParser<KeyValuePair<String, String>> {
     
     private static final String SEMICOLON = ";";
     private static final String HASHTAG = "#";
@@ -131,23 +132,24 @@ public class INIFileFormat implements FileFormat {
         return records;
     }
     
-    public final static boolean isSectionHeader(final String line) {
+    public final boolean isSectionHeader(final String line) {
         return line.startsWith(SECTION_START) && line.endsWith(SECTION_END);
     }
     
-    public final static String parseTitle(final String line) {
+    public final String parseTitle(final String line) {
         if (line.length() > 2) {
-            String title = line.substring(1, line.length() - 2);
+            String title = line.substring(1, line.length() - 1);
             return title;
         } else {
             return null;
         }
     }
     
-    public final static
+    @Override
+    public final
         KeyValuePair<String, String> parseLine(final String line)
             throws INIParseException {
-        String[] pair = line.split(SEPARATOR);
+        String[] pair = line.split(SEPARATOR, 2);
         if (pair.length != 2) {
             throw new INIParseException(
                 "expected format\"name=value\"\n"
