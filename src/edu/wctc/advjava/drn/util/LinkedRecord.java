@@ -1,6 +1,7 @@
 package edu.wctc.advjava.drn.util;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
@@ -14,17 +15,25 @@ public class LinkedRecord extends LinkedHashMap<String, String>
     public LinkedRecord() {}
 
     public LinkedRecord(String title) {
-        // No validation - see setTitle() below
-        this.title = title;
+        setTitle(title);
+    }
+    
+    public LinkedRecord(Map<String, String> map) {
+        super(map);
+    }
+    
+    public LinkedRecord(Map<String, String> map, String title) {
+        super(map);
+        setTitle(title);
     }
     
     @Override
-    public String getTitle() {
+    public final String getTitle() {
         return title;
     }
 
     @Override
-    public void setTitle(String title) {
+    public final void setTitle(String title) {
         // No validation - allow null and empty titles
         this.title = title;
     }

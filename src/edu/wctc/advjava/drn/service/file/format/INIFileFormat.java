@@ -1,6 +1,6 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.service.file.RecordFileFormat;
 import edu.wctc.advjava.drn.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Set;
  * @author Dan
  */
 public class INIFileFormat
-    implements FileFormat, LineParser<KeyValuePair<String, String>> {
+    implements RecordFileFormat, LineParser<KeyValuePair<String, String>> {
     
     private static final String SEMICOLON = ";";
     private static final String HASHTAG = "#";

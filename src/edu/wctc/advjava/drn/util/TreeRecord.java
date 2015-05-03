@@ -1,5 +1,6 @@
 package edu.wctc.advjava.drn.util;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -13,17 +14,25 @@ public class TreeRecord extends TreeMap<String, String> implements Record {
     public TreeRecord() {}
 
     public TreeRecord(String title) {
-        // No validation - see setTitle() below
-        this.title = title;
+        setTitle(title);
+    }
+    
+    public TreeRecord(Map<String, String> map) {
+        super(map);
+    }
+    
+    public TreeRecord(Map<String, String> map, String title) {
+        super(map);
+        setTitle(title);
     }
     
     @Override
-    public String getTitle() {
+    public final String getTitle() {
         return title;
     }
 
     @Override
-    public void setTitle(String title) {
+    public final void setTitle(String title) {
         // No validation - allow null and empty titles
         this.title = title;
     }

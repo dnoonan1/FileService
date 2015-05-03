@@ -1,15 +1,14 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.service.file.RecordFileFormat;
 import edu.wctc.advjava.drn.util.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  *
  * @author Dan
  */
-public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
+public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
 
     private static final char CR = '\r';
     private static final char LF = '\n';
@@ -22,6 +21,7 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
     
     private String separator;
     private boolean hasHeader;
+    private List<String> headers;
 
     public CSVFileFormat() {
         this(COMMA, NO_HEADER);
@@ -38,6 +38,7 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
     public CSVFileFormat(char separator, boolean hasHeader) {
         setSeparator(separator);
         this.hasHeader = hasHeader; // no validation required (boolean)
+        // want this.headers = null;
     }
 
     public final void setSeparator(char separator) {
@@ -51,14 +52,30 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
         return hasHeader;
     }
     
-    public final void setHeader(boolean hasHeader) {
+    public final void setHasHeader(boolean hasHeader) {
         this.hasHeader = hasHeader;
+    }
+    
+    public final void setHeaders(String[] headers) {
+        this.headers = Arrays.asList(headers);
+    }
+    
+    public final void setHeaders(List<String> headers) {
+        this.headers = headers;
     }
     
     @Override
     public final String encode(List<Record> records) {
         int lastOccurence;
         StringBuilder data = new StringBuilder();
+        if (hasHeader) {
+            Record last = records.get(records.size() - 1);
+            Set<String> keys = last.keySet();
+            for (String key : keys) {
+                data.append(key).append(separator);
+            }
+            data.deleteCharAt(data.length() - 1);
+        }
         for (Record record : records) {
             for (String s : record.values()) {
                 if (s.contains(QUOTE) || s.contains(separator)) {
@@ -69,8 +86,7 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
                 }
                 data.append(separator);
             }
-            lastOccurence = data.lastIndexOf(separator);
-            data.delete(lastOccurence, lastOccurence + separator.length());
+            data.deleteCharAt(data.length() - 1);
             data.append(NEWLINE);
         }
         lastOccurence = data.lastIndexOf(NEWLINE);
@@ -82,14 +98,13 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
     public final List<Record> decode(String data) throws CSVParseException {
         List<Record> records = new ArrayList<>();
         Record record;
-        List<String> headers;
         String[] lines = data.split(NEWLINE);
         List<String> values;
         int i = 0;
         if (lines.length > 0) {
             if (hasHeader) {
                 try {
-                    headers = parseLine(lines[i++]);
+                    headers = parseList(lines[i++]);
                 } catch (CSVParseException e) {
                     e.setLineNumber(i+1);
                     throw e;
@@ -98,15 +113,8 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
                 headers = new ArrayList<>();
             }
             for (; i < lines.length; i++) {
-                record = new LinkedRecord();
                 try {
-                    values = parseLine(lines[i]);                
-                    for (int j = 0; j < values.size(); j++) {
-                        if (j >= headers.size()) {
-                            headers.add("[" + j + "]");
-                        }
-                        record.put(headers.get(j), values.get(j));
-                    }
+                    record = parseLine(lines[i]);                
                     records.add(record);
                 } catch (CSVParseException e) {
                     e.setLineNumber(i+1);
@@ -120,7 +128,23 @@ public class CSVFileFormat implements FileFormat, LineParser<List<String>> {
     // This method is public so that other FileFormats and parsers can
     // potentially use it. It may be moved to a separate class in the future.
     @Override
-    public List<String> parseLine(String line) throws CSVParseException {
+    public Record parseLine(String line) throws CSVParseException {
+        
+        Record record = new LinkedRecord();
+        List<String> values = parseList(line);
+        for (int i = 0; i < values.size(); i++) {
+            if (i >= headers.size()) {
+                headers.add("[" + i + "]");
+            }
+            // Add the last-found value to the list of values.
+            record.put(headers.get(i), values.get(i));
+            i++;
+        }
+        // Return the list of values.
+        return record;
+    }
+    
+    public List<String> parseList(String line) throws CSVParseException {
         
         List<String> values = new ArrayList<>();
         String value;

@@ -1,15 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.wctc.advjava.drn.util;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
- * @author Dan
+ * @author Dan Noonan
+ * @see Record
  */
 public class HashRecord extends HashMap<String, String> implements Record {
 
@@ -18,19 +16,53 @@ public class HashRecord extends HashMap<String, String> implements Record {
     public HashRecord() {}
 
     public HashRecord(String title) {
-        // No validation - see setTitle() below
-        this.title = title;
+        setTitle(title);
+    }
+    
+    public HashRecord(Map<String, String> map) {
+        super(map);
+    }
+    
+    public HashRecord(Map<String, String> map, String title) {
+        super(map);
+        setTitle(title);
     }
     
     @Override
-    public String getTitle() {
+    public final String getTitle() {
         return title;
     }
 
     @Override
-    public void setTitle(String title) {
+    public final void setTitle(String title) {
         // No validation - allow null and empty titles
         this.title = title;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Objects.hashCode((HashMap)this);
+        hash = 79 * hash + Objects.hashCode(this.title);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof HashRecord) {
+            HashRecord that = (HashRecord)obj;
+            return this.title.equals(that.title)
+                    && ((HashMap)this).equals((HashMap)that);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "HashRecord{"
+                + "\n\ttitle=" + title
+                + "\n\tHashMap=" + (HashMap)this
+        + '}';
     }
     
 }

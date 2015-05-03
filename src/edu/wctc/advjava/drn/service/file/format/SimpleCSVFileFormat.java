@@ -1,6 +1,6 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.FileFormat;
+import edu.wctc.advjava.drn.service.file.RecordFileFormat;
 import edu.wctc.advjava.drn.util.LinkedRecord;
 import edu.wctc.advjava.drn.util.Record;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Dan
  */
-public class SimpleCSVFileFormat implements FileFormat {
+public class SimpleCSVFileFormat implements RecordFileFormat {
 
     private static final char CR = '\r';
     private static final char LF = '\n';
