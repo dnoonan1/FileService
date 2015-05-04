@@ -1,17 +1,29 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.FileService;
 import edu.wctc.advjava.drn.service.file.RecordFileFormat;
 import edu.wctc.advjava.drn.util.*;
 import java.util.*;
 
 /**
- *
- * @author Dan
+ * This class represents the CSV (Comma Separated Values or <i>Character</i> 
+ * Separated Values) file format. The CSV file format consists of any number of
+ * records, with one record per line. Each line has the following format:
+ * <blockquote>
+ * <i>data value 1</i>,<i>data value 2</i>,...<i>data value</i> n
+ * </blockquote>
+ * Most commonly, the comma - called the <i>separator</i> character - is used to
+ * separate data values. However, other characters may be used instead (see the
+ * constructors).
+ * 
+ * @author Dan Noonan
+ * @see RecordFileFormat
+ * @see Record
+ * @see LineParser
  */
-public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
+public class CSVFileFormat
+        implements RecordFileFormat, LineParser<Record> {
 
-    private static final boolean NO_HEADER = false;
+    private static final boolean HAS_HEADER = true;
     private static final char COMMA = ',';
     private static final String ESCAPED_QUOTE = "\"\"";
     
@@ -19,25 +31,61 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
     private boolean hasHeader;
     private List<String> headers;
 
+    /**
+     * Constructs a new instance of the {@code CSVFileFormat} which uses the 
+     * comma character (,) as a separator and reads the first line as a list of
+     * column headers by the {@code decode} method.
+     */
     public CSVFileFormat() {
-        this(COMMA, NO_HEADER);
+        this(COMMA, HAS_HEADER);
     }
     
+    /**
+     * Constructs a new instance of the {@code CSVFileFormat} which uses the 
+     * comma character (,) as a separator. If {@code hasHeader} is {@code true},
+     * the first line is read as a list of column headers by the {@code decode}
+     * method. Otherwise, if {@code hasHeader} is {@code false}, the first line
+     * is the first record. The headers are taken either from those set by one 
+     * of the {@code setHeaders} methods, or are auto-generated (see the 
+     * {@code decode} method to see how this is done).
+     * 
+     * @param hasHeader whether to read the first line as a header 
+     */
     public CSVFileFormat(final boolean hasHeader) {
         this(COMMA, hasHeader);
     }
     
+    /**
+     * Constructs a new instance of the {@code CSVFileFormat} which uses the 
+     * specified character as a separator and reads the first line as a list of
+     * column headers by the {@code decode} method.
+     * 
+     * @param separator the character to use as a separator 
+     */
     public CSVFileFormat(final char separator) {
-        this(separator, NO_HEADER);
+        this(separator, HAS_HEADER);
     }
     
+    /**
+     * Constructs a new instance of the {@code CSVFileFormat} which uses the 
+     * specified character as a separator. If {@code hasHeader} is {@code true},
+     * the first line is read as a list of column headers by the {@code decode}
+     * method. Otherwise, if {@code hasHeader} is {@code false}, the first line
+     * is the first record. The headers are taken either from those set by one 
+     * of the {@code setHeaders} methods, or are auto-generated (see the 
+     * {@code decode} method to see how this is done).
+     * 
+     * @param separator the character to use as a separator
+     * @param hasHeader whether to read the first line as a header
+     */
     public CSVFileFormat(final char separator, final boolean hasHeader) {
         setSeparator(separator);
         this.hasHeader = hasHeader; // no validation required (boolean)
-        // this.headers = null;
+        // this.headers = null; // (default)
     }
 
-    public final void setSeparator(final char separator) {
+    // Used only in constructor - private
+    private void setSeparator(final char separator) {
         if (separator == Char.CR || separator == Char.LF
                 || separator == Char.QUOTE) {
             throw new IllegalArgumentException();
@@ -45,22 +93,31 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         this.separator = separator;
     }
     
-    public final boolean hasHeader() {
-        return hasHeader;
-    }
-    
-    public final void setHasHeader(final boolean hasHeader) {
-        this.hasHeader = hasHeader;
-    }
-    
+    /**
+     * Sets the column headers used when decoding CSV-formatted text.
+     * 
+     * @param headers the column headers (array of Strings)
+     */
     public final void setHeaders(final String[] headers) {
         this.headers = Arrays.asList(headers);
     }
     
+    /**
+     * Sets the column headers used when decoding CSV-formatted text.
+     * 
+     * @param headers the column headers (List of Strings)
+     */
     public final void setHeaders(final List<String> headers) {
         this.headers = headers;
     }
     
+    /**
+     * Encodes the given {@code List} of {@code Record}s as a {@code String} of
+     * CSV-formatted text.
+     * 
+     * @param records the List of Records to encode
+     * @return the Records, formatted as CSV
+     */
     @Override
     public final String encode(final List<Record> records) {
         int lastOccurence;
@@ -95,6 +152,15 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return data.toString();
     }
 
+    /**
+     * Decodes the given String of CSV-formatted data into a {@code List} of
+     * {@code Record}s.
+     * 
+     * @param data the CSV-formatted data to decode
+     * @return a List of Records
+     * @throws CSVParseException if the given data does not follow the CSV 
+     *      format 
+     */
     @Override
     public final List<Record> decode(final String data)
             throws CSVParseException {
@@ -110,7 +176,7 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
                     e.setLineNumber(i + 1);
                     throw e;
                 }
-            } else {
+            } else if (headers == null) {
                 headers = new ArrayList<>();
             }
             for (; i < lines.length; i++) {
@@ -126,10 +192,19 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return records;
     }
     
-    // This method is public so that other FileFormats and parsers can
-    // potentially use it. It may be moved to a separate class in the future.
+    /**
+     * Parses a line of CSV-formatted text, and returns the data as a 
+     * {@code Record}. This method is used by {@code decode()} (see above) but
+     * is made public so that other classes and {@code FileFormats}/parsers 
+     * may make use of it.
+     * 
+     * @param line the line to parse
+     * @return the Record represented by the line of data
+     * @throws CSVParseException if the line does not follow the CSV format
+     */
     @Override
-    public final Record parseLine(final String line) throws CSVParseException {
+    public final Record parseLine(final String line) 
+            throws CSVParseException {
         
         final Record record = new LinkedRecord();
         final List<String> values = parseList(line);
@@ -143,6 +218,16 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return record;
     }
     
+    /**
+     * Parses a line of CSV-formatted text, and returns the data as a 
+     * {@code List} of {@code Strings}s. This method is used by {@code decode()} 
+     * (see above) but is made public so that other classes and 
+     * {@code FileFormats}/parsers may make use of it.
+     * 
+     * @param line the line to parse
+     * @return the list of data-entries represented by the line of data
+     * @throws CSVParseException if the line does not follow the CSV format
+     */
     public final List<String> parseList(final String line)
             throws CSVParseException {
         
@@ -215,6 +300,11 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return values;
     }
 
+    /**
+     * Gets the hash code for this {@code CSVFileFormat}.
+     * 
+     * @return the hash code for this object.
+     */
     @Override
     public int hashCode() {
         int hash = 7;
@@ -223,6 +313,15 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return hash;
     }
 
+    /**
+     * Compares this {@code CSVFileFormat} with the specified {@code Object} for
+     * equality. The result is true if and only if the {@code Object} is a 
+     * {@code CSVFileFormat} equivalent to this {@code CSVFileFormat}.
+     * 
+     * @param obj the object to be compared with
+     * @return true if the given Object is a CSVFileFormat equivalent to this 
+     *     CSVFileFormat, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CSVFileFormat) {
@@ -233,6 +332,11 @@ public class CSVFileFormat implements RecordFileFormat, LineParser<Record> {
         return false;
     }
 
+    /**
+     * Returns a {@code String} representation of this {@code CSVFileFormat}.
+     * 
+     * @return a String representation of this object 
+     */
     @Override
     public String toString() {
         return "CSVFileFormat{" + "separator=" + separator + ", hasHeader=" + hasHeader + ", headers=" + headers + '}';

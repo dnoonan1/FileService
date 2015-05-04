@@ -7,45 +7,60 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
- * @author Dan
+ * This class represents the INI (Initialization) file format. The INI file 
+ * format consists of sections. A section name is denoted between brackets 
+ * ({@code []}). Each section has properties with values, formatted as 
+ * <i>name</i>=<i>value</i>. Thus, the total file format may be represented as 
+ * follows:
+ * <blockquote>
+ * [<i>Section 1</i>]
+ * <i>property 1</i>=<i>value 1</i>
+ * <i>property 2</i>=<i>value 2</i>
+ * ...
+ * <i>property 3</i>=<i>value </i>n<br><br>
+ * [<i>Section 2</i>]
+ * <i>property 1</i>=<i>value 1</i>
+ * <i>property 2</i>=<i>value 2</i>
+ * ...
+ * <i>property 3</i>=<i>value </i>n<br><br>
+ * .<br>
+ * .<br>
+ * .<br><br>
+ * [<i>Section </i>n]
+ * <i>property 1</i>=<i>value 1</i>
+ * <i>property 2</i>=<i>value 2</i>
+ * ...
+ * <i>property 3</i>=<i>value </i>n
+ * </blockquote>
+ * 
+ * @author Dan Noonan
+ * @see RecordFileFormat
+ * @see Record
+ * @see LineParser
  */
 public class INIFileFormat
     implements RecordFileFormat, LineParser<KeyValuePair<String, String>> {
     
     private static final String SECTION_START = "[";
     private static final String SECTION_END = "]";
-    private static final String SEPARATOR = "=|:";
-    
-    private boolean space;
-    private boolean useColon;
+    private static final String SEPARATOR = "=";
 
-    public INIFileFormat() {
-        this(false, false);
-    }
+    /**
+     * Constructs a new instance of INIFileFormat.
+     */
+    public INIFileFormat() {}
 
-    public INIFileFormat(boolean space) {
-        this(space, false);
-    }
-    
-    public INIFileFormat(boolean space, boolean useColon) {
-        this.space = space;
-        this.useColon = useColon;
-    }
-
+    /**
+     * Encodes the given {@code List} of {@code Record}s as a {@code String} of
+     * INI-formatted text.
+     * 
+     * @param records the List of Records to encode
+     * @return the Records, formatted as an INI 
+     */
     @Override
     public final String encode(List<Record> records) {
         StringBuilder data = new StringBuilder();
         int start, end;
-        String separator;
-        if (useColon) {
-            separator = COLON;
-        } else {
-            separator = EQUALS;
-        }
-        if (space) {
-            separator = SPACE + separator + SPACE;
-        }
         for (Record rec : records) {
             data.append(SECTION_START)
                 .append(rec.getTitle())
@@ -53,7 +68,7 @@ public class INIFileFormat
             Set<String> keys = rec.keySet();
             for (String key : keys) {
                 data.append(key)
-                    .append(separator)
+                    .append(SEPARATOR)
                     .append(rec.get(key))
                     .append(NEWLINE);
             }
@@ -64,12 +79,22 @@ public class INIFileFormat
         return data.delete(start, end).toString();
     }
 
+    /**
+     * Decodes the given String of INI-formatted data into a {@code List} of
+     * {@code Record}s.
+     * 
+     * @param data the INI-formatted data to decode
+     * @return a List of Records
+     * @throws INIParseException if the given data does not follow the INI 
+     *      format
+     */
     @Override
     public final List<Record> decode(String data) throws INIParseException {
         
         List<Record> records = new ArrayList<>();
         Record record = new LinkedRecord();
         String[] lines = data.split(NEWLINE);
+        String title;
             
         for (int i = 0; i < lines.length; i++) {
 
@@ -87,30 +112,14 @@ public class INIFileFormat
             // pairs separated by =, with the following format:
             //     1. [SECTION NAME]
             //     2. NAME = VALUE
-            if (isSectionHeader(line)) {
+            if ((title = parseSectionHeader(line)) != null) {
                 // Start of a new section
                 if (!record.isEmpty()) {
                     records.add(record);
                     record = new LinkedRecord();
                 }
-//                int start = line.indexOf(SECTION_START);
-//                int end = line.indexOf(SECTION_END);
-//                String title = line.substring(start+1, end);
-                String title = parseTitle(line);
                 record.setTitle(title);
             } else {
-//                // Name-value pair separated by equals (=) or colon (:)
-//                String[] pair = line.split(SEPARATOR);
-//                if (pair.length != 2) {
-//                    INIParseException e = new INIParseException(
-//                            "expected format\"name=value\"\n"
-//                            + line + "<-- error",
-//                            line.length()
-//                    );
-//                    e.setLineNumber(i + 1);
-//                    throw e;
-//                }
-//                record.put(pair[0].trim(), pair[1].trim());
                 try {
                     KeyValuePair<String, String> kv = parseLine(line);
                     record.put(kv.getKey(), kv.getValue());
@@ -121,17 +130,24 @@ public class INIFileFormat
             }
         }
         
-        records.add(record); // add final record
-            
+        records.add(record); // add final record    
         return records;
     }
     
-    public final boolean isSectionHeader(final String line) {
-        return line.startsWith(SECTION_START) && line.endsWith(SECTION_END);
-    }
-    
-    public final String parseTitle(final String line) {
-        if (line.length() > 2) {
+    /**
+     * Parses the given line. If it is a section header (a name between brackets
+     * []), the section name is returned. Otherwise, the line is not a section 
+     * header and {@code null} is returned.
+     * 
+     * @param line the line to parse
+     * @return the section name if the given line represents a section header, 
+     *     otherwise null
+     */
+    public final String parseSectionHeader(String line) {
+        line = line.trim();
+        if (line.length() > 2 
+                && line.startsWith(SECTION_START) 
+                && line.endsWith(SECTION_END)) {
             String title = line.substring(1, line.length() - 1);
             return title;
         } else {
@@ -139,14 +155,24 @@ public class INIFileFormat
         }
     }
     
+    /**
+     * Parses the given line and returns the data as a {@code KeyValuePair}. The
+     * key represents the property name, and the value represents the property's
+     * value.
+     * 
+     * @param line the line to parse
+     * @return a KeyValuePair containing the property name and its value
+     * @throws INIParseException if the given line does not follow the INI file
+     *     format
+     */
     @Override
     public final
         KeyValuePair<String, String> parseLine(final String line)
             throws INIParseException {
-        String[] pair = line.split(SEPARATOR, 2);
+        String[] pair = line.split(SEPARATOR);
         if (pair.length != 2) {
             throw new INIParseException(
-                "expected format\"name=value\"\n"
+                "expected format\"property=value\"\n"
                 + line + "<-- error",
                 line.length()
             );
@@ -154,27 +180,42 @@ public class INIFileFormat
         return new KeyValuePair(pair[0].trim(), pair[1].trim());
     }
 
+    /**
+     * Gets the hash code for this {@code INIFileFormat}.
+     * 
+     * @return the hash code for this object.
+     */
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 29 * hash + (this.space ? 1 : 0);
-        hash = 29 * hash + (this.useColon ? 1 : 0);
         return hash;
     }
 
+    /**
+     * Compares this {@code INIFileFormat} with the specified {@code Object} for
+     * equality. The result is true if and only if the {@code Object} is a 
+     * {@code INIFileFormat} equivalent to this {@code INIFileFormat}.
+     * 
+     * @param obj the object to be compared with
+     * @return true if the given Object is a INIFileFormat equivalent to this 
+     *     INIFileFormat, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof INIFileFormat) {
-            INIFileFormat that = (INIFileFormat)obj;
-            return this.space == that.space
-                && this.useColon == that.useColon;
+            return true;
         }
         return false;
     }
 
+    /**
+     * Returns a {@code String} representation of this {@code INIFileFormat}.
+     * 
+     * @return a String representation of this object 
+     */
     @Override
     public String toString() {
-        return "INIFileFormat{" + "space=" + space + ", useColon=" + useColon + '}';
+        return "INIFileFormat{" + '}';
     }
     
 }

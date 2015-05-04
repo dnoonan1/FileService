@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface RecordFileFormat extends FileFormat<List<Record>> {
     @Override
-    String encode(List<Record> data) throws FileFormatException;
+    String encode(List<Record> records) throws FileFormatException;
     @Override
     List<Record> decode(String data) throws FileFormatException;    
 }
