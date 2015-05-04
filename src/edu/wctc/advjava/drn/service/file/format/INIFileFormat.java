@@ -13,15 +13,9 @@ import java.util.Set;
 public class INIFileFormat
     implements RecordFileFormat, LineParser<KeyValuePair<String, String>> {
     
-    private static final String SEMICOLON = ";";
-    private static final String HASHTAG = "#";
     private static final String SECTION_START = "[";
     private static final String SECTION_END = "]";
-    private static final String EQUALS = "=";
-    private static final String COLON = ":";
     private static final String SEPARATOR = "=|:";
-    private static final String SPACE = " ";
-    private static final String NEWLINE = String.format("%n");
     
     private boolean space;
     private boolean useColon;
@@ -158,6 +152,29 @@ public class INIFileFormat
             );
         }
         return new KeyValuePair(pair[0].trim(), pair[1].trim());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.space ? 1 : 0);
+        hash = 29 * hash + (this.useColon ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof INIFileFormat) {
+            INIFileFormat that = (INIFileFormat)obj;
+            return this.space == that.space
+                && this.useColon == that.useColon;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "INIFileFormat{" + "space=" + space + ", useColon=" + useColon + '}';
     }
     
 }

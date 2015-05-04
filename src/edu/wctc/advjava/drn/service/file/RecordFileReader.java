@@ -10,8 +10,6 @@ import java.util.Objects;
  * @author Dan
  */
 public class RecordFileReader implements FileReaderStrategy<List<Record>> {
-
-    private static final String NEWLINE = String.format("%n");
     
     private final File file;
     private final RecordFileFormat format;
@@ -33,10 +31,10 @@ public class RecordFileReader implements FileReaderStrategy<List<Record>> {
             throws IOException, FileFormatException {
 
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
-            String data = "";
+            String data = FileFormat.EMPTY_STRING;
             String line;
             while ((line = in.readLine()) != null) {
-                data += line + NEWLINE;
+                data += line + FileFormat.Char.CR;
             }
             return format.decode(data);
         }

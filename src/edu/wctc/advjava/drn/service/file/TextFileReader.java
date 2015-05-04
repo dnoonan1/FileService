@@ -1,14 +1,13 @@
 package edu.wctc.advjava.drn.service.file;
 
 import java.io.*;
+import java.util.Objects;
 
 /**
  *
  * @author Dan
  */
 public class TextFileReader implements FileReaderStrategy<String> {
-
-    private static final String NEWLINE = String.format("%n");
     
     private final File file;
     
@@ -22,16 +21,35 @@ public class TextFileReader implements FileReaderStrategy<String> {
     
     @Override
     public final String read() throws IOException, FileFormatException {
-
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
-            String data = FileService.EMPTY_STRING;
+            String data = FileFormat.EMPTY_STRING;
             String line;
             while ((line = in.readLine()) != null) {
-                data += line + NEWLINE;
+                data += line + FileFormat.Char.CR;
             }
             return data;
-        }
-        
+        }     
     }
-    
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + Objects.hashCode(this.file);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TextFileReader) {
+            final TextFileReader that = (TextFileReader)obj;
+            return this.file.equals(that.file);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "TextFileReader{" + "file=" + file + '}';
+    }
+   
 }

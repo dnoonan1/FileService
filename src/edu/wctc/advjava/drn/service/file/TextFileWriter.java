@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  *
@@ -31,6 +32,27 @@ public class TextFileWriter implements FileWriterStrategy<String> {
             throw e;
         }
         
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.file);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof TextFileWriter) {
+            final TextFileWriter that = (TextFileWriter)obj;
+            return this.file.equals(that.file);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "TextFileWriter{" + "file=" + file + '}';
     }
     
 }
