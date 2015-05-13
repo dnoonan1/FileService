@@ -18,27 +18,27 @@ public class Startup {
         
         final boolean WITH_HEADER = true;
         final char TAB = '\t';
-        final RecordFileFormat CSV_COMMA = new CSVFileFormat();
-        final RecordFileFormat CSV_WITH_HEADER = new CSVFileFormat(WITH_HEADER);
-        final RecordFileFormat CSV_TAB = new CSVFileFormat(TAB);
-        final RecordFileFormat INI = new INIFileFormat();
+        final FileFormat CSV_COMMA = new CSVFileFormat();
+        final FileFormat CSV_WITH_HEADER = new CSVFileFormat(WITH_HEADER);
+        final FileFormat CSV_TAB = new CSVFileFormat(TAB);
+        final FileFormat INI = new INIFileFormat();
         final char SEPARATOR = File.separatorChar;
         
         String dir = "test" + SEPARATOR + "data" + SEPARATOR;
         String inputFilePath;
         
-        RecordFileService fs = new RecordFileService();
+        FileService fs = new FileService();
         List<Record> records;
         
         inputFilePath = dir + "spline-data.txt";
         
         try {
-            fs.setReader(new RecordFileReader(inputFilePath, CSV_TAB));
-            fs.setWriter(new RecordFileWriter(dir + "spline-data.csv", CSV_COMMA));
+            fs.setReader(new TextFileReader(inputFilePath, CSV_TAB));
+            fs.setWriter(new TextFileWriter(dir + "spline-data.csv", CSV_COMMA));
             
             // Read data from CSV file
             System.out.println("Reading records from CSV...");
-            records = fs.read();
+            records = fs.readAll();
             System.out.println("...Done!");
 
             // Print out records
@@ -65,12 +65,12 @@ public class Startup {
         inputFilePath = dir + "sample.ini";
         try {
             // Switch to INI file format
-            fs.setReader(new RecordFileReader(inputFilePath, INI));
-            fs.setWriter(new RecordFileWriter(dir + "sample(1).ini", INI));
+            fs.setReader(new TextFileReader(inputFilePath, INI));
+            fs.setWriter(new TextFileWriter(dir + "sample(1).ini", INI));
             
             // Read data from INI file
             System.out.println("\nReading INI...");
-            records = fs.read();
+            records = fs.readAll();
 
             // Print out records
             System.out.println("\nList of Records:");
@@ -95,10 +95,10 @@ public class Startup {
         
         inputFilePath = dir + "contacts.csv";
         try {
-            // Switch to read CSV file with header
-            fs.setReader(new RecordFileReader(inputFilePath, CSV_WITH_HEADER));
+            // Switch to readAll CSV file with header
+            fs.setReader(new TextFileReader(inputFilePath, CSV_WITH_HEADER));
 
-            records = fs.read();
+            records = fs.readAll();
             System.out.println("\nList of Records:");
             for (Record rec : records) {
                 System.out.println(rec);

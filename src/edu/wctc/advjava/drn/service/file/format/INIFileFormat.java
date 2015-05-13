@@ -1,6 +1,6 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.RecordFileFormat;
+import edu.wctc.advjava.drn.service.file.FileFormat;
 import edu.wctc.advjava.drn.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,8 @@ import java.util.Set;
  * @see LineParser
  */
 public class INIFileFormat
-    implements RecordFileFormat, LineParser<KeyValuePair<String, String>> {
+    implements FileFormat<List<Record>>, 
+               LineParser<KeyValuePair<String, String>> {
     
     private static final String SECTION_START = "[";
     private static final String SECTION_END = "]";

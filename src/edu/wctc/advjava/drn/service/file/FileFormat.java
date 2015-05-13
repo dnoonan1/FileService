@@ -6,7 +6,6 @@ package edu.wctc.advjava.drn.service.file;
  * 
  * @author Dan Noonan
  * @param <T> the generic data object
- * @see RecordFileFormat
  */
 public interface FileFormat<T> {
     

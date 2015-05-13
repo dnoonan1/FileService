@@ -1,6 +1,6 @@
 package edu.wctc.advjava.drn.service.file.format;
 
-import edu.wctc.advjava.drn.service.file.RecordFileFormat;
+import edu.wctc.advjava.drn.service.file.FileFormat;
 import edu.wctc.advjava.drn.util.*;
 import java.util.*;
 
@@ -21,7 +21,7 @@ import java.util.*;
  * @see LineParser
  */
 public class CSVFileFormat
-        implements RecordFileFormat, LineParser<Record> {
+        implements FileFormat<List<Record>>, LineParser<Record> {
 
     private static final boolean HAS_HEADER = true;
     private static final char COMMA = ',';
