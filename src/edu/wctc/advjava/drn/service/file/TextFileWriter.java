@@ -22,15 +22,9 @@ public class TextFileWriter implements FileWriterStrategy<List<Record>> {
      * 
      * @param filePath the path of the file to read
      * @param format the format used to decode the file text
-     * 
-     * @throws FileNotFoundException if the specified file does not exist
      */
-    public TextFileWriter(final String filePath, final FileFormat<List<Record>> format)
-            throws FileNotFoundException {
+    public TextFileWriter(final String filePath, final FileFormat<List<Record>> format) {
         this.file = new File(filePath);
-        if (!file.exists()) {
-            throw new FileNotFoundException();
-        }
         if (format == null) {
             throw new IllegalArgumentException();
         }
