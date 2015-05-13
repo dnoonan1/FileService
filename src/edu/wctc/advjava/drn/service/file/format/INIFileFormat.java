@@ -64,7 +64,8 @@ public class INIFileFormat
         for (Record rec : records) {
             data.append(SECTION_START)
                 .append(rec.getTitle())
-                .append(SECTION_END);
+                .append(SECTION_END)
+                .append(NEWLINE);
             Set<String> keys = rec.keySet();
             for (String key : keys) {
                 data.append(key)

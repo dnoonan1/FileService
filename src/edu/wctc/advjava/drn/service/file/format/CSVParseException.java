@@ -1,8 +1,11 @@
 package edu.wctc.advjava.drn.service.file.format;
 
 /**
- *
- * @author Dan
+ * This exception class is for parse exceptions thrown by the {@code CSVFileFormat}
+ * methods.
+ * 
+ * @author Dan Noonan
+ * @see CSVFileFormat
  */
 public class CSVParseException extends CSVFileFormatException {
 
@@ -21,6 +24,12 @@ public class CSVParseException extends CSVFileFormatException {
         setErrorOffset(errorOffset);
     }
 
+    /**
+     * Gets the error offset for this <code>CsvParseException</code>, i.e., the
+     * index of the parse error.
+     * 
+     * @return the error offset
+     */
     public final int getErrorOffset() {
         return errorOffset;
     }
@@ -29,10 +38,20 @@ public class CSVParseException extends CSVFileFormatException {
         this.errorOffset = errorOffset;
     }
     
+    /**
+     * Gets the line number of the parse error.
+     * 
+     * @return the line number of the parse error 
+     */
     public final int getLineNumber() {
         return lineNumber;
     }
     
+    /**
+     * Sets the line number of the parse error
+     * 
+     * @param lineNumber the new line number
+     */
     public final void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }

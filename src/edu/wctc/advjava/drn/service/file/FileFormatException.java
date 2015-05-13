@@ -1,8 +1,11 @@
 package edu.wctc.advjava.drn.service.file;
 
 /**
- *
- * @author Dan
+ * This exception class is for exceptions thrown by the {@code FileFormat}
+ * methods.
+ * 
+ * @author Dan Noonan
+ * @see FileFormat
  */
 public class FileFormatException extends Exception {
 

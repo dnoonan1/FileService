@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author Dan
  */
-public class RecordFileService implements FileService<List<Record>> {
+public class RecordFileService implements FileServiceStrategy<List<Record>> {
     
     private FileReaderStrategy<List<Record>> reader;
     private FileWriterStrategy<List<Record>> writer;
@@ -53,13 +53,13 @@ public class RecordFileService implements FileService<List<Record>> {
     @Override
     public final void append(final List<Record> records)
             throws IOException, FileFormatException {
-        writer.write(records, FileService.APPEND);
+        writer.write(records, FileServiceStrategy.APPEND);
     }
     
     @Override
     public final void overwrite(final List<Record> records)
             throws IOException, FileFormatException {
-        writer.write(records, FileService.OVERWRITE);
+        writer.write(records, FileServiceStrategy.OVERWRITE);
     }
 
     @Override

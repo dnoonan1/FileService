@@ -10,5 +10,16 @@ package edu.wctc.advjava.drn.util;
  * @param <T> the type returned by this LineParser's parseLine method
  */
 public interface LineParser<T> {
+    
+    /**
+     * Parses a single line and returns a generic object representing parsed 
+     * data.
+     * 
+     * @param <X> the exception thrown by this parser
+     * @param line the line to be parsed
+     * @return a generic object representing parsed data
+     * @throws X the Exception thrown by this parser if the format is incorrect
+     */
     <X extends Exception> T parseLine(String line) throws X;
+    
 }

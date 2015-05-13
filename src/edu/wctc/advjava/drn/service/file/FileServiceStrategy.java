@@ -4,9 +4,9 @@ import java.io.IOException;
 
 /**
  *
- * @author Dan
+ * @author Dan Noonan
  */
-public interface FileService<T> {
+public interface FileServiceStrategy<T> {
     
     public static final boolean APPEND = true;
     public static final boolean OVERWRITE = false;

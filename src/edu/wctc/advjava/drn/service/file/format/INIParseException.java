@@ -1,8 +1,11 @@
 package edu.wctc.advjava.drn.service.file.format;
 
 /**
- *
- * @author Dan
+ * This exception class is for parse exceptions thrown by the {@code INIFileFormat}
+ * methods.
+ * 
+ * @author Dan Noonan
+ * @see CSVFileFormat
  */
 public class INIParseException extends INIFileFormatException {
 
@@ -10,7 +13,7 @@ public class INIParseException extends INIFileFormatException {
     private int errorOffset;
 
     /**
-     * Constructs an instance of <code>CsvParseException</code> with the
+     * Constructs an instance of <code>INIParseException</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
@@ -21,6 +24,13 @@ public class INIParseException extends INIFileFormatException {
         setErrorOffset(errorOffset);
     }
 
+    
+    /**
+     * Gets the error offset for this <code>INIParseException</code>, i.e., the
+     * index of the parse error.
+     * 
+     * @return the error offset
+     */
     public final int getErrorOffset() {
         return errorOffset;
     }
@@ -29,10 +39,20 @@ public class INIParseException extends INIFileFormatException {
         this.errorOffset = errorOffset;
     }
     
+    /**
+     * Gets the line number of the parse error.
+     * 
+     * @return the line number of the parse error 
+     */
     public final int getLineNumber() {
         return lineNumber;
     }
     
+    /**
+     * Sets the line number of the parse error
+     * 
+     * @param lineNumber the new line number
+     */
     public final void setLineNumber(int lineNumber) {
         this.lineNumber = lineNumber;
     }

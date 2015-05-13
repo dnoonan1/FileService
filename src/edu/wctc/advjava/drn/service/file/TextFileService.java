@@ -7,7 +7,7 @@ import java.util.Objects;
  *
  * @author Dan Noonan
  */
-public class TextFileService implements FileService<String> {
+public class TextFileService implements FileServiceStrategy<String> {
     
     private FileReaderStrategy<String> reader;
     private FileWriterStrategy<String> writer;
@@ -51,13 +51,13 @@ public class TextFileService implements FileService<String> {
     @Override
     public final void append(final String data)
             throws IOException, FileFormatException {
-        writer.write(data, FileService.APPEND);
+        writer.write(data, FileServiceStrategy.APPEND);
     }
     
     @Override
     public final void overwrite(final String data)
             throws IOException, FileFormatException {
-        writer.write(data, FileService.OVERWRITE);
+        writer.write(data, FileServiceStrategy.OVERWRITE);
     }
 
     @Override
